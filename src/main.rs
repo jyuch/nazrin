@@ -23,15 +23,36 @@ enum Action {
         #[clap(long, short)]
         output: PathBuf,
     },
+
+    /// Compress zip archive.
+    Zip {
+        /// Compression target
+        #[clap(long, short)]
+        input: PathBuf,
+
+        /// Zip archive path.
+        #[clap(long, short)]
+        output: PathBuf,
+    },
 }
 
 impl Action {
     fn handle(self) -> i32 {
-        use Action::Unzip;
+        use Action::{Unzip, Zip};
 
         match self {
             Unzip { input, output } => {
                 let result = unzip::expand(&input, &output);
+                match result {
+                    Ok(_) => 0,
+                    Err(e) => {
+                        eprintln!("{}", e);
+                        1
+                    }
+                }
+            }
+            Zip { input, output } => {
+                let result = nazrin::zip::compress(&input, &output);
                 match result {
                     Ok(_) => 0,
                     Err(e) => {
