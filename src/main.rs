@@ -43,24 +43,22 @@ impl Action {
         match self {
             Unzip { input, output } => {
                 let result = unzip::expand(&input, &output);
-                match result {
-                    Ok(_) => 0,
-                    Err(e) => {
-                        eprintln!("{}", e);
-                        1
-                    }
-                }
+                handle_result(result)
             }
             Zip { input, output } => {
                 let result = nazrin::zip::compress(&input, &output);
-                match result {
-                    Ok(_) => 0,
-                    Err(e) => {
-                        eprintln!("{}", e);
-                        1
-                    }
-                }
+                handle_result(result)
             }
+        }
+    }
+}
+
+fn handle_result(result: Result<(), Box<dyn std::error::Error>>) -> i32 {
+    match result {
+        Ok(_) => 0,
+        Err(e) => {
+            eprintln!("{}", e);
+            1
         }
     }
 }
