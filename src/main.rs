@@ -34,11 +34,33 @@ enum Action {
         #[clap(long, short)]
         output: PathBuf,
     },
+
+    /// Encode file as base64.
+    Base64Encode {
+        /// Source.
+        #[clap(long, short)]
+        input: PathBuf,
+
+        /// Destination.
+        #[clap(long, short)]
+        output: PathBuf,
+    },
+
+    /// Decode file as base64.
+    Base64Decode {
+        /// Source.
+        #[clap(long, short)]
+        input: PathBuf,
+
+        /// Destination.
+        #[clap(long, short)]
+        output: PathBuf,
+    },
 }
 
 impl Action {
     fn handle(self) -> i32 {
-        use Action::{Unzip, Zip};
+        use Action::{Base64Decode, Base64Encode, Unzip, Zip};
 
         match self {
             Unzip { input, output } => {
@@ -47,6 +69,14 @@ impl Action {
             }
             Zip { input, output } => {
                 let result = nazrin::zip::compress(&input, &output);
+                handle_result(result)
+            }
+            Base64Encode { input, output } => {
+                let result = nazrin::base64::encode(&input, &output);
+                handle_result(result)
+            }
+            Base64Decode { input, output } => {
+                let result = nazrin::base64::decode(&input, &output);
                 handle_result(result)
             }
         }
