@@ -8,3 +8,6 @@ clap = { version = "4.1", features = ["derive"] }
 zip = { version = "0.6", default-features = false, features = ["deflate"] }
 walkdir = { version = "2.3" }
 base64 = { version = "0.21" }
+
+[target.'cfg(windows)'.build-dependencies]
+winres = "0.1"
