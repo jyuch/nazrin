@@ -71,7 +71,7 @@ impl Action {
 
         match self {
             Unzip { input, output } => {
-                let result = nazrin::unzip::expand(&input, &output);
+                let result = nazrin::zip::expand(&input, &output);
                 handle_result(result)
             }
             Zip { input, output } => {
