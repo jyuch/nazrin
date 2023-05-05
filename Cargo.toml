@@ -8,6 +8,15 @@ clap = { version = "4.2", features = ["derive"] }
 zip = { version = "0.6", default-features = false, features = ["deflate"] }
 walkdir = { version = "2.3" }
 base64 = { version = "0.21" }
+anyhow = { version = "1" }
+thiserror = { version = "1" }
+
+[target.'cfg(windows)'.dependencies.windows]
+version = "0.48"
+features = [
+    "Win32_Storage_FileSystem",
+    "Win32_Foundation"
+]
 
 [target.'cfg(windows)'.build-dependencies]
 winres = "0.1"

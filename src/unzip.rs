@@ -1,9 +1,8 @@
-use std::error::Error;
 use std::fs::{create_dir_all, File};
 use std::io::copy;
 use std::path::Path;
 
-pub fn expand(input: &Path, output: &Path) -> Result<(), Box<dyn Error>> {
+pub fn expand(input: &Path, output: &Path) -> anyhow::Result<()> {
     let file = File::open(input)?;
     let mut archive = zip::ZipArchive::new(file)?;
 

@@ -1,5 +1,4 @@
 use clap::{Parser, Subcommand};
-use nazrin::unzip;
 use std::path::PathBuf;
 use std::process;
 
@@ -56,15 +55,23 @@ enum Action {
         #[clap(long, short)]
         output: PathBuf,
     },
+
+    // Unleash.
+    #[cfg(windows)]
+    Unleash {
+        /// Target.
+        #[clap(long, short)]
+        target: PathBuf,
+    },
 }
 
 impl Action {
     fn handle(self) -> i32 {
-        use Action::{Base64Decode, Base64Encode, Unzip, Zip};
+        use Action::{Base64Decode, Base64Encode, Unleash, Unzip, Zip};
 
         match self {
             Unzip { input, output } => {
-                let result = unzip::expand(&input, &output);
+                let result = nazrin::unzip::expand(&input, &output);
                 handle_result(result)
             }
             Zip { input, output } => {
@@ -79,11 +86,15 @@ impl Action {
                 let result = nazrin::base64::decode(&input, &output);
                 handle_result(result)
             }
+            Unleash { target } => {
+                let result = nazrin::unleash::unleash(&target);
+                handle_result(result)
+            }
         }
     }
 }
 
-fn handle_result(result: Result<(), Box<dyn std::error::Error>>) -> i32 {
+fn handle_result(result: anyhow::Result<()>) -> i32 {
     match result {
         Ok(_) => 0,
         Err(e) => {

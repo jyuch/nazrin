@@ -1,10 +1,9 @@
 use base64::engine::general_purpose;
-use std::error::Error;
 use std::fs::File;
 use std::io::copy;
 use std::path::Path;
 
-pub fn encode(input: &Path, output: &Path) -> Result<(), Box<dyn Error>> {
+pub fn encode(input: &Path, output: &Path) -> anyhow::Result<()> {
     let mut input = File::open(input)?;
     let mut output = File::create(output)?;
 
@@ -14,7 +13,7 @@ pub fn encode(input: &Path, output: &Path) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-pub fn decode(input: &Path, output: &Path) -> Result<(), Box<dyn Error>> {
+pub fn decode(input: &Path, output: &Path) -> anyhow::Result<()> {
     let mut input = File::open(input)?;
     let mut output = File::create(output)?;
 

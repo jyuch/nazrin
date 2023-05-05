@@ -1,9 +1,8 @@
-use std::error::Error;
 use std::fs::File;
 use std::io::{Read, Write};
 use std::path::Path;
 
-pub fn compress(input: &Path, output: &Path) -> Result<(), Box<dyn Error>> {
+pub fn compress(input: &Path, output: &Path) -> anyhow::Result<()> {
     let zip_file = File::create(&output)?;
     let mut zip = zip::ZipWriter::new(zip_file);
     let mut buf = Vec::new();
