@@ -62,6 +62,10 @@ enum Action {
         /// Target.
         #[clap(long, short)]
         target: PathBuf,
+
+        /// Recursive.
+        #[clap(long, short)]
+        recursive: bool,
     },
 }
 
@@ -86,9 +90,14 @@ impl Action {
                 let result = nazrin::base64::decode(&input, &output);
                 handle_result(result)
             }
-            Unleash { target } => {
-                let result = nazrin::unleash::unleash(&target);
-                handle_result(result)
+            Unleash { target, recursive } => {
+                if recursive {
+                    let result = nazrin::unleash::unleash_recursive(&target);
+                    handle_result(result)
+                } else {
+                    let result = nazrin::unleash::unleash(&target);
+                    handle_result(result)
+                }
             }
         }
     }

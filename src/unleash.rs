@@ -1,5 +1,5 @@
 use crate::error::UnleashError::Win32Error;
-use anyhow::Context;
+use anyhow::Context as _;
 use std::path::Path;
 use windows::core::PCWSTR;
 use windows::Win32::Foundation::GetLastError;
@@ -23,4 +23,15 @@ pub fn unleash(target: &Path) -> anyhow::Result<()> {
         let error = unsafe { GetLastError() };
         Err(Win32Error(error))?
     }
+}
+
+pub fn unleash_recursive(target: &Path) -> anyhow::Result<()> {
+    let walk_dir = walkdir::WalkDir::new(target).contents_first(true);
+
+    for it in walk_dir.into_iter() {
+        let it = it?;
+        unleash(it.path())?
+    }
+
+    Ok(())
 }
