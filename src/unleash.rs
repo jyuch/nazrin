@@ -1,8 +1,7 @@
-use crate::error::UnleashError::Win32Error;
 use anyhow::Context as _;
+use std::io::Error;
 use std::path::Path;
 use windows::core::PCWSTR;
-use windows::Win32::Foundation::GetLastError;
 use windows::Win32::Storage::FileSystem::{MoveFileExW, MOVEFILE_DELAY_UNTIL_REBOOT};
 
 fn to_wstring(value: &str) -> Vec<u16> {
@@ -20,8 +19,7 @@ pub fn unleash(target: &Path) -> anyhow::Result<()> {
     if result.as_bool() {
         Ok(())
     } else {
-        let error = unsafe { GetLastError() };
-        Err(Win32Error(error))?
+        Err(Error::last_os_error())?
     }
 }
 
