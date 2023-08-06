@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-clap = { version = "4.2", features = ["derive"] }
+clap = { version = "4.3", features = ["derive"] }
 zip = { version = "0.6", default-features = false, features = ["deflate"] }
 walkdir = { version = "2.3" }
 base64 = { version = "0.21" }
