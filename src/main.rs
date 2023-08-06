@@ -56,7 +56,7 @@ enum Action {
         output: PathBuf,
     },
 
-    // Unleash.
+    /// Unleash.
     #[cfg(windows)]
     Unleash {
         /// Target.
