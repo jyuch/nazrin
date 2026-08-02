@@ -1,5 +1,5 @@
-use std::fs::{create_dir_all, File};
-use std::io::{copy, Read, Write};
+use std::fs::{File, create_dir_all};
+use std::io::{Read, Write, copy};
 use std::path::Path;
 
 pub fn compress(input: &Path, output: &Path) -> anyhow::Result<()> {

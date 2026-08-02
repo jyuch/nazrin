@@ -1,8 +1,8 @@
 use anyhow::Context as _;
 use std::io::Error;
 use std::path::Path;
+use windows::Win32::Storage::FileSystem::{MOVEFILE_DELAY_UNTIL_REBOOT, MoveFileExW};
 use windows::core::PCWSTR;
-use windows::Win32::Storage::FileSystem::{MoveFileExW, MOVEFILE_DELAY_UNTIL_REBOOT};
 
 fn to_wstring(value: &str) -> Vec<u16> {
     use std::os::windows::ffi::OsStrExt;
