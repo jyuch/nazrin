@@ -1,6 +1,7 @@
 use std::fs::{File, create_dir_all};
 use std::io::{Read, Write, copy};
 use std::path::Path;
+use zip::write::SimpleFileOptions;
 
 pub fn compress(input: &Path, output: &Path) -> anyhow::Result<()> {
     let zip_file = File::create(output)?;
@@ -14,13 +15,13 @@ pub fn compress(input: &Path, output: &Path) -> anyhow::Result<()> {
 
         if let Some(name) = inner_path.as_os_str().to_str() {
             if it.path().is_file() {
-                zip.start_file(name, Default::default())?;
+                zip.start_file(name, SimpleFileOptions::default())?;
                 let mut f = File::open(it.path())?;
                 f.read_to_end(&mut buf)?;
                 zip.write_all(&buf)?;
                 buf.clear();
             } else {
-                zip.add_directory(name, Default::default())?;
+                zip.add_directory(name, SimpleFileOptions::default())?;
             }
         }
     }
@@ -46,9 +47,10 @@ pub fn expand(input: &Path, output: &Path) -> anyhow::Result<()> {
         } else {
             let file_path = output.join(local_path);
             if let Some(parent) = file_path.parent()
-                && !parent.exists() {
-                    create_dir_all(parent)?;
-                }
+                && !parent.exists()
+            {
+                create_dir_all(parent)?;
+            }
 
             let mut f = File::create(&file_path)?;
             copy(&mut file, &mut f)?;
