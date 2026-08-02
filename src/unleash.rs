@@ -1,5 +1,4 @@
 use anyhow::Context as _;
-use std::io::Error;
 use std::path::Path;
 use windows::Win32::Storage::FileSystem::{MOVEFILE_DELAY_UNTIL_REBOOT, MoveFileExW};
 use windows::core::PCWSTR;
@@ -14,13 +13,8 @@ fn to_wstring(value: &str) -> Vec<u16> {
 
 pub fn unleash(target: &Path) -> anyhow::Result<()> {
     let target = to_wstring(target.to_str().context("to_wstring")?);
-    let result = unsafe { MoveFileExW(PCWSTR(target.as_ptr()), None, MOVEFILE_DELAY_UNTIL_REBOOT) };
-
-    if result.as_bool() {
-        Ok(())
-    } else {
-        Err(Error::last_os_error())?
-    }
+    unsafe { MoveFileExW(PCWSTR(target.as_ptr()), None, MOVEFILE_DELAY_UNTIL_REBOOT) }?;
+    Ok(())
 }
 
 pub fn unleash_recursive(target: &Path) -> anyhow::Result<()> {
