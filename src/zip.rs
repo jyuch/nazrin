@@ -45,11 +45,10 @@ pub fn expand(input: &Path, output: &Path) -> anyhow::Result<()> {
             create_dir_all(&directory_path)?;
         } else {
             let file_path = output.join(local_path);
-            if let Some(parent) = file_path.parent() {
-                if !parent.exists() {
+            if let Some(parent) = file_path.parent()
+                && !parent.exists() {
                     create_dir_all(parent)?;
                 }
-            }
 
             let mut f = File::create(&file_path)?;
             copy(&mut file, &mut f)?;
