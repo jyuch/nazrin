@@ -12,48 +12,16 @@ struct Cli {
 
 #[derive(Subcommand, Debug)]
 enum Action {
-    /// Expand zip archive.
-    Unzip {
-        /// Zip archive path.
-        #[clap(long, short)]
-        input: PathBuf,
-
-        /// Expand destination.
-        #[clap(long, short)]
-        output: PathBuf,
-    },
-
-    /// Compress zip archive.
+    /// Zip archive operations.
     Zip {
-        /// Compression target
-        #[clap(long, short)]
-        input: PathBuf,
-
-        /// Zip archive path.
-        #[clap(long, short)]
-        output: PathBuf,
+        #[clap(subcommand)]
+        command: ZipCommand,
     },
 
-    /// Encode file as base64.
-    Base64Encode {
-        /// Source.
-        #[clap(long, short)]
-        input: PathBuf,
-
-        /// Destination.
-        #[clap(long, short)]
-        output: PathBuf,
-    },
-
-    /// Decode file as base64.
-    Base64Decode {
-        /// Source.
-        #[clap(long, short)]
-        input: PathBuf,
-
-        /// Destination.
-        #[clap(long, short)]
-        output: PathBuf,
+    /// Base64 operations.
+    Base64 {
+        #[clap(subcommand)]
+        command: Base64Command,
     },
 
     /// Unleash.
@@ -69,35 +37,99 @@ enum Action {
     },
 }
 
+#[derive(Subcommand, Debug)]
+enum ZipCommand {
+    /// Compress zip archive.
+    Compress {
+        /// Compression target
+        #[clap(long, short)]
+        input: PathBuf,
+
+        /// Zip archive path.
+        #[clap(long, short)]
+        output: PathBuf,
+    },
+
+    /// Expand zip archive.
+    Expand {
+        /// Zip archive path.
+        #[clap(long, short)]
+        input: PathBuf,
+
+        /// Expand destination.
+        #[clap(long, short)]
+        output: PathBuf,
+    },
+}
+
+#[derive(Subcommand, Debug)]
+enum Base64Command {
+    /// Encode file as base64.
+    Encode {
+        /// Source.
+        #[clap(long, short)]
+        input: PathBuf,
+
+        /// Destination.
+        #[clap(long, short)]
+        output: PathBuf,
+    },
+
+    /// Decode file as base64.
+    Decode {
+        /// Source.
+        #[clap(long, short)]
+        input: PathBuf,
+
+        /// Destination.
+        #[clap(long, short)]
+        output: PathBuf,
+    },
+}
+
 impl Action {
     fn handle(self) -> i32 {
-        use Action::{Base64Decode, Base64Encode, Unleash, Unzip, Zip};
-
         match self {
-            Unzip { input, output } => {
-                let result = nazrin::zip::expand(&input, &output);
+            Action::Zip { command } => command.handle(),
+            Action::Base64 { command } => command.handle(),
+            #[cfg(windows)]
+            Action::Unleash { target, recursive } => {
+                let result = if recursive {
+                    nazrin::unleash::unleash_recursive(&target)
+                } else {
+                    nazrin::unleash::unleash(&target)
+                };
                 handle_result(result)
             }
-            Zip { input, output } => {
+        }
+    }
+}
+
+impl ZipCommand {
+    fn handle(self) -> i32 {
+        match self {
+            ZipCommand::Compress { input, output } => {
                 let result = nazrin::zip::compress(&input, &output);
                 handle_result(result)
             }
-            Base64Encode { input, output } => {
+            ZipCommand::Expand { input, output } => {
+                let result = nazrin::zip::expand(&input, &output);
+                handle_result(result)
+            }
+        }
+    }
+}
+
+impl Base64Command {
+    fn handle(self) -> i32 {
+        match self {
+            Base64Command::Encode { input, output } => {
                 let result = nazrin::base64::encode(&input, &output);
                 handle_result(result)
             }
-            Base64Decode { input, output } => {
+            Base64Command::Decode { input, output } => {
                 let result = nazrin::base64::decode(&input, &output);
                 handle_result(result)
-            }
-            Unleash { target, recursive } => {
-                if recursive {
-                    let result = nazrin::unleash::unleash_recursive(&target);
-                    handle_result(result)
-                } else {
-                    let result = nazrin::unleash::unleash(&target);
-                    handle_result(result)
-                }
             }
         }
     }
