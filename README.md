@@ -155,11 +155,13 @@ if errorlevel 1 (
 
 ## ビルド
 
-Rust (edition 2024 対応版) のツールチェインが必要です。
+nightlyツールチェインが使用できる場合、以下のコマンドでバイナリサイズを縮小出来ます。
 
 ```
-cargo build --release
+cargo +nightly build --release --config .cargo/release.toml
 ```
+
+stableツールチェインの場合、環境変数`RUSTC_BOOTSTRAP=1`を設定したうえでnightlyツールチェインと同じコマンドでビルドします。
 
 `target/release/nazrin` (Windows では `nazrin.exe`) が生成されます。
 Windows の MSVC ターゲットでは CRT を静的リンクする設定になっているため、
